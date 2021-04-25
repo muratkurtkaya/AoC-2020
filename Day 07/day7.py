@@ -6,7 +6,7 @@ print("shiny coral bag" in bags[0])
 
 
 indx = bags[0].index("contain")
-#print(bags[0][:indx-5])
+print(bags)
 def solv1(bags):
 	direct_bags = []
 
