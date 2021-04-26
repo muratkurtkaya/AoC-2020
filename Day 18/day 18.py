@@ -1,5 +1,6 @@
 import re
 import time
+import numpy as np
 
 t = time.time()
 
@@ -9,7 +10,7 @@ with open("data.txt") as f:
 def apply_op(data):
 	nums = [int(i) for i in (re.findall('\d+', data))]
 	ops  = [i for i in data if i == "+" or i =="*"]
-	while len(nums) > 1:
+	while ops != []:
 		a,b  = nums[0:2]
 		op = ops[0]
 		if op == "+":
@@ -21,24 +22,30 @@ def apply_op(data):
 		nums.insert(0,c)
 	return nums[0]
 
-# "1 + 2 * 3 + 4 * 5 + 6"
-# [1,2,3,4,5,6]
-# [+,*,+,*,+]
+def apply_op_part2(data):
+	nums = [int(i) for i in (re.findall('\d+', data))]
+	ops  = [i for i in data if i == "+" or i =="*"]
+	while "+" in ops:
+		indx = ops.index("+")
+		a,b  = nums[indx:indx+2]
+		c = a+b
+		del ops[indx]
+		del nums[indx:indx+2]
+		nums.insert(indx,c)
+	return np.prod(np.array(nums),dtype=np.int64) #int64, otherwise it is truncated
 
-# + = *
-# * = +
 
-# def operator(+,a,b):
-# 	return a*b
-
-
-def solv(data):
+def solve(data,part=1):
 	while "(" in data:
 		sub = parser(data)
-		num = apply_op(sub)
+		if part == 1:
+			num = apply_op(sub)
+		else:
+			num = apply_op_part2(sub)
 		data = data.replace(sub,str(num))
+	return apply_op(data) if part==1 else apply_op_part2(data)
 
-	return apply_op(data)
+
 
 def parser(data):
 	sol = None
@@ -53,9 +60,13 @@ def parser(data):
 
 
 ans1 = 0
+ans2 = 0
 for dat in data:
-	ans1 += solv(dat)
+	ans1 += solve(dat,part=1)
+	ans2 += solve(dat,part=2)
 
-print(ans1)
+print("ans1:",ans1)
+print("ans2:",ans2)
 
 print(time.time()-t)
+
